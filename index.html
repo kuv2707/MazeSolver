@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Solver</title>
+</head>
+<body>
+    <style>
+        body
+        {
+            display:grid;
+        }
+        .mazePixel
+        {
+            width:20px;
+            height:20px;
+            
+        }
+    </style>
+    <script>
+        fetch("/solve").then(res=>res.json())
+        .then(data=>
+        {
+            //console.log(data)
+            animate(JSON.parse(data))
+        })
+
+
+        function animate(arr)
+        {
+            let maze=arr[0];
+            let soln=arr[1];
+            let start=arr[2];
+            let end=arr[3];
+            console.log(soln)
+            document.body.style=`grid-template-rows: repeat(${maze.length},20px);
+            grid-template-columns: repeat(${maze.length},20px);`;
+            for(let i=0;i<maze.length;i++)
+            {
+                for(let j=0;j<maze[0].length;j++)
+                {
+                    let ele=document.createElement("button");
+                    ele.className="mazePixel";
+                    document.body.append(ele);
+                    ele.style.backgroundColor=(maze[j][i]==0?"black":"white")
+                    maze[j][i]=ele;
+                }
+            }
+            let current=JSON.parse(JSON.stringify(start));
+            let idd=setInterval(animatorFn,50);
+            function animatorFn()
+            {
+                if(soln.length==0)
+                clearInterval(idd);
+                else
+                {
+                    let instr=soln.pop();
+                    switch(instr)
+                    {
+                        case "right":
+                            {
+                                current.x++;
+                                break;
+                            }
+                        case "left":
+                            {
+                                current.x--;
+                                break;
+                            }
+                        case "up":
+                            {
+                                current.y--;
+                                break;
+                            }
+                        case "down":
+                            {
+                                current.y++;
+                                break;
+                            }
+                    }
+                    maze[current.x][current.y].style.backgroundColor="red";
+                }
+            }
+        }
+    </script>
+    
+</body>
+</html>
